@@ -56,5 +56,6 @@ data/diagnostic.data/metrics.2020-09-15T09-25-19Z-00000
 data/journal/WiredTigerLog.0000000017
 data/journal/WiredTigerPreplog.0000000001
 data/journal/WiredTigerPreplog.0000000002
+${maven.home}/lib/ext
 .classpath
 mvn-home.txt

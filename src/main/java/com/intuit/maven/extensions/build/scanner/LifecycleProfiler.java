@@ -18,6 +18,7 @@ import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
@@ -48,6 +49,14 @@ public class LifecycleProfiler extends AbstractEventSpy {
 
   public LifecycleProfiler() {
     this("1".equals(System.getenv("MAVEN_BUILD_SCANNER")), MongoDataStorage::new);
+
+    LOGGER.info("----------------------------------------------------------------------");
+    LOGGER.info(" SYSTEM ENV SCANNER DB: " + System.getenv("MAVEN_BUILD_SCANNER_URL"));
+    LOGGER.info("----------------------------------------------------------------------");
+    LOGGER.info(" SYSTEM ENV DISP ALL ARGS: " + System.getenv("MAVEN_BUILD_SCANNER_APP_DISP_ALLARGS"));
+    LOGGER.info("----------------------------------------------------------------------");
+    LOGGER.info(" SYSTEM ENV SCANNER ON: " + System.getenv("MAVEN_BUILD_SCANNER"));
+    LOGGER.info("----------------------------------------------------------------------");
   }
 
   LifecycleProfiler(boolean enabled, Function<SessionProfile, DataStorage> dataStorageFactory) {
@@ -147,7 +156,8 @@ public class LifecycleProfiler extends AbstractEventSpy {
                     + "#"
                     + sessionProfile.getId());
             LOGGER.info(
-                "Open http://localhost:3000/?projectId={}&sessionId={} to view your Maven build scanner results",
+                "Open http://{}:3000/?projectId={}&sessionId={} to view your Maven build scanner results",
+                Optional.ofNullable(System.getenv("MAVEN_BUILD_SCANNER_URL")).orElse("localhost"),
                 sessionProfile.getProject().getId(),
                 sessionProfile.getId());
             break;
@@ -240,9 +250,7 @@ public class LifecycleProfiler extends AbstractEventSpy {
     List<String> out = new ArrayList<>();
 
     out.add("mvn");
-
     out.add("-s " + request.getUserSettingsFile());
-
     out.add("-T " + request.getDegreeOfConcurrency());
 
     request.getActiveProfiles().stream().map(profile -> "-P" + profile).forEach(out::add);
@@ -256,13 +264,18 @@ public class LifecycleProfiler extends AbstractEventSpy {
 
     out.addAll(request.getGoals());
 
-    request
-        .getSystemProperties()
-        .entrySet()
-        .stream()
-        .filter(e -> e.getKey().equals("env.MAVEN_CMD_LINE_ARGS"))
-        .map(e -> "allCmdLineArgs: {" + e.getValue() + "}")
-        .forEach(out::add);
+    if ("1"
+        .equals(
+            Optional.ofNullable(System.getenv("MAVEN_BUILD_SCANNER_APP_DISP_ALLARGS"))
+                .orElse("0"))) {
+      request
+          .getSystemProperties()
+          .entrySet()
+          .stream()
+          .filter(e -> e.getKey().equals("env.MAVEN_CMD_LINE_ARGS"))
+          .map(e -> "allCmdLineArgs: {" + e.getValue() + " }")
+          .forEach(out::add);
+    }
 
     return String.join(" ", out);
   }

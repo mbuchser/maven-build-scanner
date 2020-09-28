@@ -66,5 +66,18 @@ For development you can use mvn package to install the extension into maven.home
 
     mvn package -DskipTests
 
+Available Environment Variables:
+
+    Activate the Build scanner
+    - MAVEN_BUILD_SCANNER (Values 1 or 0)
+    
+    Connection to the Web-App Server and Mongo DB (default: http://localhost:3000 and mongodb://localhost:27017) 
+    - MAVEN_BUILD_SCANNER_URL (Value example: localhost without port number)
+
+    Display all Maven command line arguments (otherwise you see -D and -P arguments)
+    - MAVEN_BUILD_SCANNER_APP_DISP_ALLARGS (Values 1 or 0)
+    
+
+
 # License
 Maven Build Scanner is released under the Apache 2.0 licenses. It uses [junit]( https://junit.org/junit4/) which is licensed under EPL 1.0.

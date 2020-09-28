@@ -20,15 +20,19 @@ import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.ReplaceOptions;
 import java.util.Optional;
 import org.bson.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MongoDataStorage implements DataStorage {
+
   private static final ReplaceOptions UPSERT = new ReplaceOptions().upsert(true);
   private final ObjectMapper objectMapper =
       new ObjectMapper().configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
   private final MongoClient mongoClient =
       MongoClients.create(
-          Optional.ofNullable(System.getenv("MAVEN_BUILD_SCANNER_DB"))
-              .orElse("mongodb://localhost/build_scans?serverSelectionTimeoutMS=1000"));
+          "mongodb://"
+              + Optional.ofNullable(System.getenv("MAVEN_BUILD_SCANNER_URL")).orElse("localhost")
+              + "/build_scans?serverSelectionTimeoutMS=1000");
   private final MongoDatabase database = mongoClient.getDatabase("build_scans");
   private final MongoCollection<Document> projectSummariesCollection =
       database.getCollection("project_summaries");

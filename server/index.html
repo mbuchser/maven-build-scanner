@@ -195,6 +195,8 @@
                 items.push(sessionSummary);
             });
 
+            var totalTime = 0;
+
             var ul = $("<ul/>", {class: "nav flex-column"});
 
             var table = $("<table/>", {class: "table"});
@@ -222,6 +224,7 @@
                     + parseAgo(parseInt(sessionSummary.startTime)) + "  " + parseStatus(sessionSummary.status) + "</a>"
                 }).appendTo(ul);
 
+                totalTime += sessionSummary.duration;
 
                 tbody.append("<tr>" +
                     "<td><a href='?projectId=" + projectId + "&sessionId=" + sessionSummary.id + "'><span data-feather='target'></span> " + parseAgo(sessionSummary.startTime) + "</a></td>" +
@@ -231,8 +234,17 @@
                     "<td>" + sessionSummary.username + "@" + sessionSummary.hostname + "</td>" +
                     "<td>" + parseDuration(sessionSummary.duration) + "</td>" +
                     "</tr>");
-            });
 
+                   
+            });
+            table.append("<thead><tr>" +
+                "<th> </th>" +
+                "<th> </th>" +
+                "<th> </th>" +
+                "<th> </th>" +
+                "<th>Total Duration</th>" +
+                "<th>" + parseDuration(totalTime) + "</th>" +
+                "</tr></thead>");
 
             if (sessionId == null) {
                 $("<h1/>", {html: "<span data-feather='package'></span> " + projectId}).appendTo("main");

@@ -7,6 +7,8 @@ COPY package*.json ./
 #In case your corp firewall gives you troubles building, try this 
 #RUN npm config set registry http://registry.npmjs.org/
 #RUN npm config set strict-ssl false
+#RUN npm config set proxy http://<yourproxy:port>
+#RUN npm config set https-proxy http://<yourproxy:port>
 
 RUN npm install
 # If you are building your code for production
